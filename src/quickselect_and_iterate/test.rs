@@ -1,5 +1,5 @@
 use core::panic;
-use proptest::{collection::vec, proptest};
+use proptest::{collection::vec, prop_assert_eq, proptest};
 
 use super::quickselect_and_iterate;
 use crate::common::noop;
@@ -24,7 +24,7 @@ proptest! {
                 else { panic!() };
             let value = *value;
             values.sort();
-            assert_eq!(value, values[index]);
+            prop_assert_eq!(value, values[index]);
         }
     }
 
@@ -34,6 +34,6 @@ proptest! {
         let Some(value) = quickselect_and_iterate(&mut values, 0, noop)
             else { panic!() };
         let value = *value;
-        assert_eq!(value, values[0])
+        prop_assert_eq!(value, values[0])
     }
 }
