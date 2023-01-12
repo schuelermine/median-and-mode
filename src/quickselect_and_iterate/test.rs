@@ -1,4 +1,3 @@
-use core::panic;
 use proptest::{collection::vec, prop_assert_eq, proptest};
 
 use super::quickselect_and_iterate;

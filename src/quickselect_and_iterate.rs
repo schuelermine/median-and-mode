@@ -26,7 +26,7 @@ fn quickselect_and_iterate_inner<T: PartialOrd + Clone>(
         action(value_ref);
         return value_ref;
     }
-    let pivot_index = lomuto_partition(values);
+    let pivot_index = hoare_partition(values);
     let pivot_value_ref = &values[pivot_index];
     action(pivot_value_ref);
     if pivot_index == index {
@@ -54,18 +54,21 @@ fn quickselect_and_iterate_inner<T: PartialOrd + Clone>(
     }
 }
 
-fn lomuto_partition<T: PartialOrd + Clone>(values: &mut [T]) -> usize {
+fn hoare_partition<T: PartialOrd + Clone>(values: &mut [T]) -> usize {
     let len = values.len();
-    debug_assert!(len > 1);
     let pivot_value = values[len / 2].clone();
-    let mut pivot_index = 0;
-    values.swap(len / 2, len - 1);
-    for current_index in 0..len - 1 {
-        if values[current_index] < pivot_value {
-            values.swap(pivot_index, current_index);
-            pivot_index += 1;
+    let mut left_index = 0;
+    let mut right_index = len - 1;
+    loop {
+        while values[left_index] < pivot_value {
+            left_index += 1;
         }
+        while values[right_index] > pivot_value {
+            right_index -= 1;
+        }
+        if left_index >= right_index {
+            return right_index;
+        }
+        values.swap(left_index, right_index);
     }
-    values.swap(len - 1, pivot_index);
-    pivot_index
 }
