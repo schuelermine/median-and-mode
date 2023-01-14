@@ -1,13 +1,13 @@
 use super::{median_and_mode, Median, MedianAndMode, Mode};
 use proptest::{collection::vec, prop_assert, prop_assert_eq, prop_assert_ne, proptest};
-// ^ See https://github.com/proptest-rs/proptest/issues/256
 use std::collections::HashSet;
+// See https://github.com/proptest-rs/proptest/issues/256
 
 #[test]
 fn test_median_and_mode_empty_array() {
     let mut values: [i128; 0] = [];
     let None = median_and_mode(&mut values)
-        else { panic!() };
+        else { panic!("Wrong result pattern") };
 }
 #[test]
 fn test_median_and_mode_1() {
@@ -33,7 +33,7 @@ fn test_median_and_mode_2() {
         -467,
     ];
     let Some(MedianAndMode { median, mode }) = median_and_mode(&mut values)
-        else { panic!() };
+        else { panic!("Wrong result pattern") };
     assert_eq!(median, Median::At(7952));
     assert_eq!(mode, Mode(HashSet::from_iter(values.iter().copied())));
 }
@@ -44,10 +44,10 @@ proptest! {
         let len = values.len();
         if len == 0 {
             let None = median_and_mode(&mut values)
-                else { panic!() };
+                else { panic!("Wrong result pattern") };
         } else {
             let Some(MedianAndMode { median, mode }) = median_and_mode(&mut values)
-                else { panic!() };
+                else { panic!("Wrong result pattern") };
             values.sort();
             match median {
                 Median::At(x) => {
@@ -65,6 +65,7 @@ proptest! {
                 frequencies.push(values.iter().filter(|n| **n == value).count())
             };
             let first_frequency = frequencies[0];
+            prop_assert!(first_frequency <= len);
             prop_assert!(frequencies.iter().all(|n| *n == first_frequency));
         }
     }
@@ -73,7 +74,7 @@ proptest! {
     fn proptest_median_and_mode_singleton_vec(value in i128::MIN..i128::MAX) {
         let mut values = vec![value];
         let Some(MedianAndMode { median, mode }) = median_and_mode(&mut values)
-            else { panic!() };
+            else { panic!("Wrong result pattern") };
         prop_assert_eq!(median, Median::At(value));
         prop_assert_eq!(mode, Mode(HashSet::from([value])))
     }

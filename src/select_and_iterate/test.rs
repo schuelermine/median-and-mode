@@ -7,7 +7,7 @@ use std::collections::HashMap;
 fn test_select_empty_vec() {
     let mut values: Vec<i128> = vec![];
     let None = select_and_iterate(&mut values, 0, noop)
-        else { panic!() };
+        else { panic!("Wrong result pattern") };
 }
 
 proptest! {
@@ -16,7 +16,7 @@ proptest! {
         let len = values.len();
         if len == 0 {
             let None = select_and_iterate(&mut values, index, noop)
-                else { panic!() };
+                else { panic!("Wrong result pattern") };
         } else {
             let index = index % len;
             let mut frequencies = HashMap::new();
@@ -38,8 +38,13 @@ proptest! {
 
     #[test]
     fn proptest_select_singleton_vec(value in i128::MIN..i128::MAX) {
+        let mut counter = 0;
+        let action = |_: &i128| {
+            counter += 1;
+        };
         let mut values = vec![value];
-        let Some(0) = select_and_iterate(&mut values, 0, noop)
-            else { panic!() };
+        let Some(0) = select_and_iterate(&mut values, 0, action)
+            else { panic!("Wrong result pattern") };
+        prop_assert_eq!(counter, 1);
     }
 }
