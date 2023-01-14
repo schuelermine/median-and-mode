@@ -32,7 +32,7 @@ pub fn median_and_mode<T: Ord + Eq + Hash + Clone>(values: &mut [T]) -> Option<M
     }
     let mut frequencies = HashMap::new();
     let action = |x: &T| {
-        let frequency = frequencies.entry((*x).clone()).or_insert(0);
+        let frequency = frequencies.entry(x.clone()).or_insert(0);
         *frequency += 1;
     };
     let median;
