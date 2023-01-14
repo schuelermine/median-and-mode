@@ -1,5 +1,7 @@
 mod common;
 mod select_and_iterate;
+#[cfg(test)]
+mod test;
 
 use std::{
     collections::{HashMap, HashSet},
@@ -7,9 +9,6 @@ use std::{
 };
 
 use crate::{common::noop, select_and_iterate::select_and_iterate};
-
-#[cfg(test)]
-mod test;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Median<T> {
