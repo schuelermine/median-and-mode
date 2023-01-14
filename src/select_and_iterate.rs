@@ -22,12 +22,13 @@ pub fn select_and_iterate<T: Ord + Clone>(
 fn select_and_iterate_inner<T: Ord + Clone>(
     values: &mut [T],
     index: usize,
-    action: impl FnMut(&T),
+    mut action: impl FnMut(&T),
 ) -> usize {
     let len = values.len();
     debug_assert_ne!(len, 0);
     if len == 1 {
         debug_assert_eq!(index, 0);
+        action(&values[0]);
         return 0;
     }
     let pivot_index = pivot(values);

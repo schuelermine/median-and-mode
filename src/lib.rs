@@ -26,32 +26,31 @@ pub struct MedianAndMode<T: Eq + Hash> {
     pub mode: Mode<T>,
 }
 
-pub fn median_and_mode<T: Ord + Eq + Hash + Clone>(values: &[T]) -> Option<MedianAndMode<T>> {
+pub fn median_and_mode<T: Ord + Eq + Hash + Clone>(values: &mut [T]) -> Option<MedianAndMode<T>> {
     let len = values.len();
     if len == 0 {
         return None;
     }
-    let mut working_values: Vec<&T> = values.iter().collect();
     let mut frequencies = HashMap::new();
-    let action = |x: &&T| {
+    let action = |x: &T| {
         let frequency = frequencies.entry((*x).clone()).or_insert(0);
         *frequency += 1;
     };
     let median;
     if len % 2 == 1 {
         let middle = len / 2;
-        let Some(median_index) = select_and_iterate(&mut working_values, middle, action)
+        let Some(median_index) = select_and_iterate(values, middle, action)
             else { return None; };
-        median = Median::At(working_values[median_index].clone());
+        median = Median::At(values[median_index].clone());
     } else {
         let middle_1 = len / 2 - 1;
         let middle_2 = len / 2;
-        let Some(median_1_index) = select_and_iterate(&mut working_values, middle_1, action)
+        let Some(median_1_index) = select_and_iterate(values, middle_1, action)
             else { return None; };
-        let median_1 = working_values[median_1_index].clone();
-        let Some(median_2_index) = select_and_iterate(&mut working_values, middle_2, noop)
+        let median_1 = values[median_1_index].clone();
+        let Some(median_2_index) = select_and_iterate(values, middle_2, noop)
             else { panic!() };
-        let median_2 = working_values[median_2_index].clone();
+        let median_2 = values[median_2_index].clone();
         if median_1 == median_2 {
             median = Median::At(median_1);
         } else {
